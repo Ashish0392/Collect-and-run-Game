@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour {
 
-    public Transform target;
+    Transform target;
     public bool pursuit = false;
     public float triggerRadius = 2f;
     public float range = 10f;
@@ -22,6 +22,8 @@ public class Enemy : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+       GameObject targetObject = GameObject.FindGameObjectWithTag("Player") as GameObject;
+        target = targetObject.transform;
 
         this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         this.gameObject.GetComponentInChildren<Light>().enabled = false;
@@ -42,16 +44,23 @@ public class Enemy : MonoBehaviour {
         //checking if pursuit is already live
         if (pursuit != true)
         {
+            Debug.LogError("P not true");
             //checking if target triggered 
             if (dist < triggerRadius)
             {
-                //pursuit live
-                pursuit = true;
+                Debug.LogError("inside radius");
+                if (LineOfSight()) {
+                    Debug.LogError("Is now visible");
+                    Debug.LogError("P true");
+                    //pursuit live
+                    pursuit = true;
 
-                //activate this
-                Activate(true);
-                return;
+                    //activate this
+                    Activate(true);
+                    return;
+                }
             }
+               
             return;
         }
 
@@ -94,6 +103,7 @@ public class Enemy : MonoBehaviour {
             this.gameObject.GetComponent<MeshRenderer>().enabled = true;
             this.gameObject.GetComponentInChildren<Light>().enabled = true;
             this.gameObject.GetComponent<AudioSource>().Play();
+            agent.GetComponent<NavMeshAgent>().enabled = true;
             //Chase();
         }
         else {
